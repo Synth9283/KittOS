@@ -8,21 +8,21 @@ src = $(wildcard kernel/src/*.c)
 obj = $(src:.c=.o)
 linker = $(isoDir)/linker.ld
 compiler = gcc
-compilerFlags = -m32 -std=c99 -ffreestanding -O2 -Wall -Wextra
+compilerFlags = -m32 -std=c99 -ffreestanding -O2 -Wall -Wextra -fstack-protector 
 
 all: $(iso)
 
 $(iso): $(bin)
 	grub-mkrescue kernel/iso -o $^
 
-$(bin): $(boot) $(kernel)
+$(bin): $(boot) $(kernel) $(obj)
 	$(compiler) -T $(linker) $(compilerFlags) -nostdlib $^ -o $@
 
-$(boot): $(isoDir)/boot.s
-	i686-elf-as $^ -o $@
+$(boot): $(isoDir)/boot.asm
+	nasm -f elf32 $^ -o $@
 
-$(kernel): main.c $(obj)
-	$(compiler) -c $^ $(compilerFlags) -T $(linker) -o $@
+$(kernel): main.c
+	$(compiler) -c $^ $(compilerFlags) -o $@
 
 %.o: %.c
 	$(compiler) -c $(compilerFlags) $^ -o $@
