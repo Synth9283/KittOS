@@ -13,7 +13,7 @@ compilerFlags = -m32 -std=c99 -ffreestanding -O2 -Wall -Wextra -fstack-protector
 all: $(iso)
 
 $(iso): $(bin)
-	grub-mkrescue kernel/iso -o $^
+	grub-mkrescue kernel/iso -o $@
 
 $(bin): $(boot) $(kernel) $(obj)
 	$(compiler) -T $(linker) $(compilerFlags) -nostdlib $^ -o $@
